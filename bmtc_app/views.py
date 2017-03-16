@@ -5,6 +5,11 @@ from django.http import HttpResponse
 
 def home(request):
     context={}
+    bus_data = BusStops.objects.values_list('stop_name',flat=True)
+    bus_stops=[]
+    for i in range(0,len(bus_data)):
+        bus_stops.append(str(bus_data[i]))
+    context["bus_stops"]=bus_stops
     if request.method == 'POST':
         src = request.POST.get('source')
         dest = request.POST.get('destination')
@@ -23,7 +28,6 @@ def home(request):
 	       "key":'AIzaSyDCdSpDXOO-i-DW7-Az6PO7toRnykIE7vA',
 	       "mode":'transit',
 	       "transit_mode":'bus'}
-
         resp = ""
         resp = requests.post(url,params=data,headers=headers)
         resp_json = resp.json()

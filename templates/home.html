@@ -1,10 +1,16 @@
 <html>
 <head> BMTC </head>
 <title> BMTC </title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <body>
   <form method="POST" action=""> {% csrf_token %}
-    <input type="text" name="source" placeholder="Enter Source" id="src">
-    <input type="text" name="destination" placeholder="Destination" id="dst">
+    <div class="ui-widget">
+    <input type="text" name="source" placeholder="Enter Source" id="src"></div>
+    <div class="ui-widget">
+    <input type="text" name="destination" placeholder="Destination" id="dst"></div>
     <input type="submit" name="search" value="Search">
   </form>
   {% if src and dest %}
@@ -16,22 +22,34 @@
   <b>Arrival Time : {{arrival_time}}</b><br>
   <b>Number of Stops : {{stops}}</b><br>
   {% endif %}
-  <script>
-    $(document).ready( function(){
-      $('#src').keyup(function(){
-        var name = $(this).val();
-        $.ajax(function(){
-          type:"GET",
-          url:"/get_bus_stops/",
-          data :  {name: name},
-          success: function(data){
-            $("#src").autocomplete({
-              source:data
-            })
-          }
-        })
-      })
-    })
-  </script>
 </body>
+<script>
+$( function() {
+var availableTags = {{bus_stops|safe}};
+$( "#src" ).autocomplete({
+source: availableTags
+});
+$( "#dst" ).autocomplete({
+source: availableTags
+});
+} );
+</script>
+<!-- <script>
+$(document).ready( function(){
+  $('#src').change(function(){
+    var name = $(this).val();
+    var buses = ['ABCDEF','LAJDLA',"JSJHJHSDJH",'KHSJKDJS'];
+    $.ajax(function(){
+      type:"GET",
+      url:"/get_bus_stops/",
+      data :  {name: name},
+      success: function(data){
+        $("#src").autocomplete({
+          source:buses
+        })
+      }
+    })
+  })
+})
+</script> -->
 </html>
