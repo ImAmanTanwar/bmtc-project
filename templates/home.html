@@ -2,10 +2,36 @@
 <head> BMTC </head>
 <title> BMTC </title>
 <body>
-  <form method="GET" action="">
+  <form method="POST" action=""> {% csrf_token %}
     <input type="text" name="source" placeholder="Enter Source" id="src">
     <input type="text" name="destination" placeholder="Destination" id="dst">
     <input type="submit" name="search" value="Search">
   </form>
+  {% if src and dest %}
+  <b> Bus from: {{src}}  to {{dest}}<b><br>
+    {% endif %}
+  {% if route_no and arrival_time %}
+  <b>Route No: {{route_no}}</b><br>
+  <b>Bus title : {{bus_name}}</b><br>
+  <b>Arrival Time : {{arrival_time}}</b><br>
+  <b>Number of Stops : {{stops}}</b><br>
+  {% endif %}
+  <script>
+    $(document).ready( function(){
+      $('#src').keyup(function(){
+        var name = $(this).val();
+        $.ajax(function(){
+          type:"GET",
+          url:"/get_bus_stops/",
+          data :  {name: name},
+          success: function(data){
+            $("#src").autocomplete({
+              source:data
+            })
+          }
+        })
+      })
+    })
+  </script>
 </body>
 </html>
