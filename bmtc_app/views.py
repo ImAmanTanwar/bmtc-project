@@ -3,7 +3,7 @@ from .models import BusStops
 import json, requests, time
 from django.http import HttpResponse
 
-def home(request):
+def index(request):
     context={}
     bus_data = BusStops.objects.values_list('stop_name',flat=True)
     bus_stops=[]
@@ -49,8 +49,3 @@ def home(request):
         #print "Bus Route No. "+str(bus_obj["transit_details"]["line"]["short_name"])+" from "+str(bus_obj["transit_details"]["line"]["name"])+" will arrive at "
         #print str(bus_obj["transit_details"]["departure_time"]["text"])
     return render(request,"home.html",context)
-
-def get_bus_stops(request):
-    buses = ['ABCDEF','LAJDLA',"JSJHJHSDJH",'KHSJKDJS']
-    print(buses)
-    return HttpResponse(str(buses))
