@@ -15,12 +15,12 @@ def index(request):
         dest = request.POST.get('destination')
         context["src"] = src
         context["dest"] = dest
-        src_lat = BusStops.objects.get(stop_name=src).latitude
-        src_lon = BusStops.objects.get(stop_name=src).longitude
-        src_loc = src_lat+", "+src_lon
-        dest_lat = BusStops.objects.get(stop_name=dest).latitude
-        dest_lon = BusStops.objects.get(stop_name=dest).longitude
-        dest_loc = dest_lat+", "+dest_lon
+        context["src_lat"] = BusStops.objects.get(stop_name=src).latitude
+        context["src_lon"] = BusStops.objects.get(stop_name=src).longitude
+        src_loc = context["src_lat"]+", "+context["src_lon"]
+        context["dest_lat"] = BusStops.objects.get(stop_name=dest).latitude
+        context["dest_lon"] = BusStops.objects.get(stop_name=dest).longitude
+        dest_loc = context["dest_lat"]+", "+context["dest_lon"]
         url = "https://maps.googleapis.com/maps/api/directions/json"
         headers = {'Content-Type':'application/json'}
         data = {"origin":src_loc,
@@ -49,3 +49,6 @@ def index(request):
         #print "Bus Route No. "+str(bus_obj["transit_details"]["line"]["short_name"])+" from "+str(bus_obj["transit_details"]["line"]["name"])+" will arrive at "
         #print str(bus_obj["transit_details"]["departure_time"]["text"])
     return render(request,"home.html",context)
+
+def map(request):
+    return render(request,"maptemplate.html",{})
