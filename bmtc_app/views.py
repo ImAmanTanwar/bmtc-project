@@ -46,6 +46,8 @@ def index(request):
         context["stops"] = str(bus_obj["transit_details"]["num_stops"])
         context["bus_name"] = str(bus_obj["transit_details"]["line"]["name"])
         context["arrival_time"] = str(bus_obj["transit_details"]["departure_time"]["text"])
+        context["arrival_epoch"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(str(bus_obj["transit_details"]["departure_time"]["value"]))))
+        print context["arrival_epoch"]
         #print "Bus Route No. "+str(bus_obj["transit_details"]["line"]["short_name"])+" from "+str(bus_obj["transit_details"]["line"]["name"])+" will arrive at "
         #print str(bus_obj["transit_details"]["departure_time"]["text"])
     return render(request,"home.html",context)
