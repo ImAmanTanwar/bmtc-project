@@ -7,7 +7,7 @@
 </div>
 
 <script>
-$('#clock').countdown('{{arrival_epoch}}')
+$('#clock').countdown('{{bus_wait_time}}')
 .on('update.countdown', function(event) {
   var format = '%H:%M:%S';
   if(event.offset.totalDays > 0) {

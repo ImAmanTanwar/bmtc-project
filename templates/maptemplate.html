@@ -41,7 +41,7 @@
   var bounds = new google.maps.LatLngBounds();
   var infowindow = new google.maps.InfoWindow();
   var markers=[]
-  postdata = {route: "{{route_no}}"}
+  postdata = {route: "{{start_route}}"}
   function reloadMapData(){
   $.ajax({
     type:'POST',
@@ -61,7 +61,7 @@
       bounds.extend(marker.position);
       google.maps.event.addListener(marker, 'click', (function(marker,j) {
         return function() {
-          infowindow.setContent('<font color="red">'+data.buses_number[j]+"</font>");
+          infowindow.setContent('Bus Number : <font color="red">'+data.buses_number[j]+"</font><br>Direction:"+data.direction[j]);
           infowindow.open(map, marker);
         }
       })(marker,j));
