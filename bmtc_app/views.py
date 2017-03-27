@@ -52,6 +52,8 @@ def index(request):
                     bus_data.route_no=""
                 bus_data.stops = str(bus_obj["transit_details"]["num_stops"])
                 bus_data.bus_name = str(bus_obj["transit_details"]["line"]["name"])
+                bus_data.arrival_stop=str(bus_obj["transit_details"]["arrival_stop"]["name"])
+                bus_data.departure_stop=str(bus_obj["transit_details"]["departure_stop"]["name"])
                 bus_data.departure_time = str(bus_obj["transit_details"]["departure_time"]["text"])
                 bus_data.arrival_time = str(bus_obj["transit_details"]["arrival_time"]["text"])
                 bus_data.arrival_epoch = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(str(bus_obj["transit_details"]["departure_time"]["value"]))))
