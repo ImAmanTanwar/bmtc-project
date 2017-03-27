@@ -38,50 +38,5 @@
 
   </script>
   <script>
-  var bounds = new google.maps.LatLngBounds();
-  var infowindow = new google.maps.InfoWindow();
-  var markers=[]
-  postdata = {route: "{{route_no}}"}
-  function reloadMapData(){
-  $.ajax({
-    type:'POST',
-    url: '/get_data_map/',
-    data:postdata,
-    success: function(data) {
-      data = JSON.parse(data)
-      for (var j = 0;j<data.buses_lat.length;j++) {
-        if (data.buses_number[j]==null){
-          continue;
-        }
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(data.buses_lat[j], data.buses_lon[j]),
-        map: map,
-        icon:"{% static '308.png' %}"
-      });
-      bounds.extend(marker.position);
-      google.maps.event.addListener(marker, 'click', (function(marker,j) {
-        return function() {
-          infowindow.setContent('<font color="red">'+data.buses_number[j]+"</font>");
-          infowindow.open(map, marker);
-        }
-      })(marker,j));
-      markers.push(marker);
-    }
-  }
-})
-}
-
-$(document).ready(function(){
-  $("#trackbuses").click(function(){
-  reloadMapData();
-setInterval(function(){
-  for (var j=0;j<markers.length;j++) {
-    markers[j].setMap(null);
-  }
-  markers=[]
-reloadMapData();
-},30000)
-});
-});
   </script>
 </body>

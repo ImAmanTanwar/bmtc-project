@@ -2,6 +2,8 @@ from django.shortcuts import render
 from .models import BusStops
 import json, requests, time
 from django.http import HttpResponse
+import re
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
     context={}
@@ -42,15 +44,59 @@ def index(request):
             if steps[i]["travel_mode"]=="TRANSIT":
                 bus_obj = steps[i]
                 break
-        context["route_no"] = str(bus_obj["transit_details"]["line"]["short_name"])
-        context["stops"] = str(bus_obj["transit_details"]["num_stops"])
-        context["bus_name"] = str(bus_obj["transit_details"]["line"]["name"])
-        context["arrival_time"] = str(bus_obj["transit_details"]["departure_time"]["text"])
-        context["arrival_epoch"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(str(bus_obj["transit_details"]["departure_time"]["value"]))))
-        print context["arrival_epoch"]
+        if "short_name" in bus_obj["transit_details"]["line"]:
+            context["route_no"] = str(bus_obj["transit_details"]["line"]["short_name"])
+            context["stops"] = str(bus_obj["transit_details"]["num_stops"])
+            context["bus_name"] = str(bus_obj["transit_details"]["line"]["name"])
+            context["arrival_time"] = str(bus_obj["transit_details"]["departure_time"]["text"])
+            context["arrival_epoch"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(str(bus_obj["transit_details"]["departure_time"]["value"]))))
+        else:
+            context["no_bus"]=True
+
+        #for i in range(0,len(bmtc_data)):
+
         #print "Bus Route No. "+str(bus_obj["transit_details"]["line"]["short_name"])+" from "+str(bus_obj["transit_details"]["line"]["name"])+" will arrive at "
         #print str(bus_obj["transit_details"]["departure_time"]["text"])
     return render(request,"home.html",context)
 
-def map(request):
-    return render(request,"maptemplate.html",{})
+@csrf_exempt
+def get_data_map(request):
+    context={}
+    if request.method=='POST':
+        route_data = request.POST['route']
+        bmtc_url = "http://bmtcmob.hostg.in/api//itsroutewise/details"
+        #route_number =
+        print re.search('-', route_data)
+        route_no=re.split('(\d+)',route_data)
+        print route_no
+        flag=False
+        for i in range(0,len(route_no)):
+            if route_no[i]=="-":
+                flag=True
+                break
+        if not flag:
+            route = route_no[1]+"-"+route_no[2]
+        else:
+            route = context["route_no"]
+        params = {'direction': 'DN', 'routeNO': route}
+        r = requests.post(bmtc_url, data=params)
+        bmtc_data = r.json()
+        buses_lat = [None]*len(bmtc_data)
+        buses_lon = [None]*len(bmtc_data)
+        buses_number = [None]*len(bmtc_data)
+        for i in range(0,len(bmtc_data)):
+            buses_lat[i] = str(bmtc_data[i][2]).split(":")[1]
+            buses_lon[i] = str(bmtc_data[i][3]).split(":")[1]
+            buses_number[i] = str(bmtc_data[i][0]).split(":")[1]
+        params = {'direction': 'UP', 'routeNO': route}
+        r = requests.post(bmtc_url, data=params)
+        bmtc_data = r.json()
+        for i in range(0,len(bmtc_data)):
+            buses_lat.append(str(bmtc_data[i][2]).split(":")[1])
+            buses_lon.append(str(bmtc_data[i][3]).split(":")[1])
+            buses_number.append(str(bmtc_data[i][0]).split(":")[1])
+        context["buses_lat"] = buses_lat
+        context["buses_lon"] = buses_lon
+        context["buses_number"] = buses_number
+        # print str(str(bmtc_data[0][0]).split(":")[1])
+        return HttpResponse(str(json.dumps(context)))
